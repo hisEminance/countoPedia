@@ -1,107 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import attack from './images/attack.png';
 import defence from './images/defend.png';
+import Board from "./Components/Board";
+import Img from "./Components/Img";
+import Button from "./Components/Button";
+
+  const defaultState = {
+    count: 10,
+    lastPlay: "",
+    gameStatus: ""
+  };
 
 
+export default function Counter() {
+  const [state, setState] = useState(defaultState);
 
+  const handleAttack = () => {
+    const newCount = state.count + Math.round(Math.random() * 10);
+    setState({
+      count: newCount,
+      lastPlay: "Attack",
+      gameStatus: newCount > 10 ? "You won" : state.count,
+    });
+  };
+  
 
-export default class Counter extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          count:10, 
-          lastPlay: "",
-          gameStatus: ""
-        }
-    }
-
-  handleAttack = () => {
-    this.setState((previousState) => {
-      let newCount = previousState.count + Math.round(Math.random() * 10);
-      return {
-        count: newCount,
-        lastPlay: "Attack",
-        gameStatus: newCount > 10 ? "You Won!!" : previousState.gameStatus,
-      };
+  const handleDefence = () => {
+    const newCount = state.count - Math.round(Math.random() * 10);
+    setState({
+      count: newCount,
+      lastPlay: "Defence",
+      gameStatus: newCount < 10 ? "You lose" : state.count,
     });
   };
 
-  handleDefence = () => {
-    this.setState((previousState) => {
-      let newCount = previousState.count - Math.round(Math.random() * 10);
-      return {
-        count: newCount,
-        lastPlay: "Defence",
-        gameStatus: newCount < -10 ? "You Lost!!" : previousState.gameStatus,
-      };
-    });
+  const handleRandomPlay = () => {
+    const playMode = Math.round(Math.random());
+    playMode == 0 ? handleAttack() : handleDefence();
   };
 
-  handleRandomPlay = () => {
-    let playMode = Math.round(Math.random());
-    if(playMode == 0) {
-        this.handleAttack();
-    } else {
-        this.handleDefence();
-    }
-  };
-
-  handleReset = () => {
-    this.setState({
-        count: 10,
-        lastPlay: "",
-        gameStatus: ""
-    });
+  const handleReset = () => {
+    setState(defaultState);
    };
-    render() {
-        return(
+   
+  return (
         <div className="row text-white">
-            <h1>Game Score: {this.state.count}</h1>
-            <p>You win at +10 points and lose at -10 points</p>
-            <p>Last Play: {this.state.lastPlay}</p>
-            <h3>Game status: {this.state.gameStatus}</h3>
-            <div className="col-6 col-md-3 offset-md-3">
-                  <img
-            alt="attack"
-            style={{
-              width: "100%",
-              cursor: "pointer",
-              border: "1px solid green",
-            }}
-            className="p-4 rounded"
-            src={attack}
-            onClick={this.handleAttack}
-            />
-            </div>
+          <Board
+           count = {state.count}
+           lastPlay = {state.lastPlay}
+           gameStatus = {state.gameStatus}
+          />
+          <div className="col-6 col-md-3 offset-md-3">
+            <Img alt = "attack" src = {attack} borderColor="green" onClick={handleAttack}/>
+            <Img alt = "defend" src = {defence} borderColor="red" onClick={handleDefence}/>
+          </div>
 
-         <div className="col-6 col-md-3 offset-md-3">
-         <img
-            alt="defend"
-            style={{
-              width: "100%",
-              cursor: "pointer",
-              border: "1px solid red",
-            }}
-            className="p-4 rounded"
-            src={defence}
-            onClick={this.handleDefence}
-            />
-            </div>
-            <div className="col-12 col-md-4 offset-md-4">
-          <button
-            className="btn btn-secondary w-100 mt-2"
-            onClick={this.handleRandomPlay}
-          >
-            Random Play
-          </button>
-          <br />
-          <button
-            className="btn btn-warning w-100 mt-2"
-            onClick={this.handleReset}
-          >
-            Reset
-          </button>
+          <div className="col-12 col-md-4 offset-md-4">
+              <Button label = "Reset" onClick={handleReset} className="btn btn-warning" />
+              <Button label = "Random Play" onClick={handleRandomPlay} className="btn btn-secondary" />
+          </div>
         </div>
-        </div>)
-    };
-}
+    )
+  };
